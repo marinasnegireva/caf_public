@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions - Cognitive Agent Framework</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+    <div class="app-container">
+        <div id="sidebar-container"></div>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Sessions</h1>
+                    <p class="page-subtitle">Manage conversation sessions and their turns</p>
+                </div>
+
+                <div class="header-section">
+                    <button id="createSessionBtn" class="btn btn-primary">+ New Session</button>
+                </div>
+
+                <div id="activeSessionSection" class="section">
+                    <h2>Active Session</h2>
+                    <div id="activeSessionCard" class="card">
+                        <p class="no-data">No active session</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>All Sessions</h2>
+                    <div id="sessionsList" class="sessions-list">
+                        <p class="loading">Loading sessions...</p>
+                    </div>
+                </div>
+
+                <!-- Create/Edit Session Modal -->
+                <div id="sessionModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modalTitle">Create Session</h3>
+                            <span class="close">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <form id="sessionForm">
+                                <div class="form-group">
+                                    <label for="sessionName">Session Name</label>
+                                    <input type="text" id="sessionName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="duplicateTurnsCheckbox">
+                                        Duplicate turns from previous session
+                                    </label>
+                                </div>
+                                <div id="duplicateTurnsOptions" class="form-group" style="display: none; margin-left: 25px;">
+                                    <div class="form-group">
+                                        <label for="sourceSessionSelect">Source Session</label>
+                                        <select id="sourceSessionSelect">
+                                            <option value="">Select a session...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="turnCountInput">Number of Turns to Copy</label>
+                                        <input type="number" id="turnCountInput" min="1" value="5">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/sidebar-loader.js"></script>
+    <script type="module" src="sessions.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Pipeline - Cognitive Agent Framework</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <style>
+        .debug-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .output-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .state-info {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .state-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .state-item {
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+
+        .state-item-expandable {
+            cursor: pointer;
+        }
+
+        .state-item-expandable:hover {
+            background: #f8f9fa;
+        }
+
+        .state-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expand-btn {
+            padding: 2px 8px;
+            font-size: 0.8em;
+            color: #007bff;
+        }
+
+        .expand-btn:hover {
+            color: #0056b3;
+        }
+
+        .state-item-content {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .expanded-content-item {
+            margin-bottom: 15px;
+        }
+
+        .expanded-pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .quote-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .quote-item strong {
+            color: #007bff;
+        }
+
+        .context-section {
+            margin-bottom: 15px;
+        }
+
+        .context-section:not(:last-child) {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 15px;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+
+        .state-item-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .state-item-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .request-viewer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 600px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .provider-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .provider-claude {
+            background: #d97706;
+            color: white;
+        }
+
+        .provider-gemini {
+            background: #4285f4;
+            color: white;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner.active {
+            display: block;
+        }
+
+        .error-message {
+            background: #fee;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            background: #efe;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .json-key {
+            color: #9cdcfe;
+        }
+
+        .json-string {
+            color: #ce9178;
+        }
+
+        .json-number {
+            color: #b5cea8;
+        }
+
+        .json-boolean {
+            color: #569cd6;
+        }
+
+        .json-null {
+            color: #569cd6;
+        }
+
+        .tab-content {
+            margin-top: 20px;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #666;
+            padding: 10px 20px;
+            margin-right: 5px;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="sidebar-container"></div>
+
+        <div class="main-content">
+            <div class="debug-container">
+                <div class="page-header">
+                    <h1><i class="fas fa-bug"></i> Debug Pipeline</h1>
+                    <p class="text-muted">Test the conversation pipeline and inspect the constructed LLM request without sending it</p>
+                </div>
+
+                <div class="input-section">
+                    <h4>Input</h4>
+                    <div class="mb-3">
+                        <label for="debugInput" class="form-label">Enter your message:</label>
+                        <textarea 
+                            class="form-control" 
+                            id="debugInput" 
+                            rows="4" 
+                            placeholder="Type your message here..."
+                        ></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="processButton">
+                        <i class="fas fa-play"></i> Process Through Pipeline
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Processing through pipeline...</p>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+
+                <div class="output-section" id="outputSection" style="display: none;">
+                    <h4>Pipeline Output</h4>
+                    
+                    <div class="state-info">
+                        <h5>Conversation State</h5>
+                        <div class="state-info-grid" id="stateInfoGrid"></div>
+                    </div>
+
+                    <div class="state-info mt-3">
+                        <h5>Context Data Token Counts</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Loaded items shown automatically. Click to see ALL enabled items.</small>
+                            <button class="btn btn-sm btn-outline-primary" id="loadTokenCountsButton">
+                                <i class="fas fa-list"></i> Show All Enabled Items
+                            </button>
+                        </div>
+                        <div id="tokenCountsContainer" style="display: none;">
+                            <div id="tokenCountsSummary" class="mb-2"></div>
+                            <div id="tokenCountsGrid" class="state-info-grid"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-outline-primary me-2" id="formatted-tab" type="button">
+                            <i class="fas fa-eye"></i> Formatted View
+                        </button>
+                        <button class="btn btn-primary" id="raw-tab" type="button">
+                            <i class="fas fa-code"></i> Raw JSON
+                        </button>
+                    </div>
+
+                    <div id="formatted" style="display: none;">
+                        <div id="providerBadge"></div>
+                        <div class="request-viewer">
+                            <button class="btn btn-sm btn-secondary copy-button" id="copyFormattedButton">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <pre id="formattedRequest"></pre>
+                        </div>
+                    </div>
+                    <div id="raw" style="display: block;">
+                        <div class="request-viewer">
+                            <button class="btn btn-sm btn-secondary copy-button" id="copyRawButton">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <pre id="rawRequest"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/sidebar-loader.js"></script>
+    <script src="debug.js"></script>
+</body>
+</html>

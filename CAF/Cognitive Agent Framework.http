@@ -1,0 +1,186 @@
+@Cognitive_Agent_Framework_HostAddress = http://localhost:5198
+
+# UI Endpoints
+# Memory Management UI: http://localhost:5198/memories.html
+# System Messages UI: http://localhost:5198/systemmessages.html
+
+GET {{Cognitive_Agent_Framework_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+### System Messages - Initialize Default Technical Messages
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages/initialize-defaults
+Content-Type: application/json
+
+###
+
+### System Messages - Get All Technical Messages
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages?type=Technical
+Accept: application/json
+
+###
+
+# Get all memories
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/memories
+Accept: application/json
+
+###
+
+# Get memories by session
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/memories?sessionId=1
+Accept: application/json
+
+###
+
+# Get memory by ID
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/memories/1
+Accept: application/json
+
+###
+
+# Create a new memory
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/memories
+Content-Type: application/json
+
+{
+  "content": "Test memory content",
+  "sessionId": 1,
+  "type": 3,
+  "summary": "Test summary",
+  "keywords": ["test", "demo"]
+}
+
+###
+
+# Import from TSV
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/memories/import/tsv
+Content-Type: application/json
+
+{
+  "tsvContent": "Content\tKeywords\nTest memory 1\t{test,demo}\nTest memory 2\t{sample}"
+}
+
+###
+
+# System Messages API
+
+# Get all system messages
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages
+Accept: application/json
+
+###
+
+# Get system messages by type
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages?type=Persona
+Accept: application/json
+
+###
+
+# Create a new system message
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages
+Content-Type: application/json
+
+{
+  "name": "Test Persona",
+  "content": "You are a helpful assistant",
+  "type": "Persona",
+  "isActive": true,
+  "tags": ["assistant", "helpful"]
+}
+
+###
+
+# Build complete system message
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages/build
+Accept: application/json
+
+###
+
+# Core Memories API
+
+# Get all core memories
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/corememories
+Accept: application/json
+
+###
+
+# Create a new core memory (will use Gemini API for token counting)
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/corememories
+Content-Type: application/json
+
+{
+  "name": "TEST MEMORY",
+  "content": "This is a test memory with some content to count tokens. The Gemini API will provide accurate token counts for this text.",
+  "summary": "Test summary",
+  "coreFacts": "Test fact",
+  "type": "Event",
+  "display": "Content",
+  "isEnabled": true
+}
+
+###
+
+# Update a core memory (will recalculate tokens)
+PUT {{Cognitive_Agent_Framework_HostAddress}}/api/corememories/1
+Content-Type: application/json
+
+{
+  "name": "UPDATED MEMORY",
+  "content": "Updated content that should have different token count",
+  "summary": "Updated summary",
+  "coreFacts": "Updated fact",
+  "type": "Event",
+  "display": "Summary",
+  "isEnabled": true
+}
+
+###
+
+# Import core memories from markdown (will calculate tokens for all)
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/corememories/import/markdown
+Content-Type: application/json
+
+{
+  "markdownContent": "## FIRST MEMORY\nThis is the first memory content.\n\n---\n\n## SECOND MEMORY\nThis is the second memory with more text to test token counting.\n\n---\n"
+}
+
+###
+
+# System Messages Preview (uses Gemini token counting API)
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages/preview
+Accept: application/json
+
+###
+
+# Get active persona (to verify preview data)
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages/active/persona
+Accept: application/json
+
+###
+
+# Settings API - Memory Analysis Additional Context
+
+# Get memory analysis additional context setting
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/settings/value/MemoryAnalysisAdditionalContext
+Accept: application/json
+
+###
+
+# Generate summary with additional context
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/corememories/1/generate-summary
+Accept: application/json
+
+###
+
+# Generate core facts with additional context  
+POST {{Cognitive_Agent_Framework_HostAddress}}/api/corememories/1/generate-corefacts
+Accept: application/json
+
+###
+
+# Get technical message for memory summary instructions
+GET {{Cognitive_Agent_Framework_HostAddress}}/api/systemmessages?type=Technical
+Accept: application/json
+
+###

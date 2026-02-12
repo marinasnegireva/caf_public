@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Messages - CAF</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <style>
+        .message-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: #f9f9f9;
+            transition: all 0.2s ease;
+        }
+
+            .message-card:hover {
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            margin: -8px -8px 8px -8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+            .message-header:hover {
+                background: rgba(0,0,0,0.05);
+            }
+
+        .message-title {
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .message-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-persona {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-perception {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-technical {
+            background: #e0f2f1;
+            color: #00796b;
+        }
+
+        .badge-context {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+            .message-actions button {
+                padding: 6px 12px;
+                font-size: 13px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+        .btn-expand {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+            .btn-expand:hover {
+                background: #e8e8e8;
+            }
+
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+
+            .btn-edit:hover {
+                background: #1976D2;
+            }
+
+        .btn-archive {
+            background: #ff9800;
+            color: white;
+        }
+
+            .btn-archive:hover {
+                background: #f57c00;
+            }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+            .btn-delete:hover {
+                background: #d32f2f;
+            }
+
+        .message-preview {
+            display: none;
+            padding: 12px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #2196F3;
+            margin-bottom: 12px;
+            max-height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+
+            .message-preview.expanded {
+                display: block;
+                max-height: none;
+            }
+
+            .message-preview::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 30px;
+                background: linear-gradient(transparent, white);
+                pointer-events: none;
+            }
+
+            .message-preview.expanded::after {
+                display: none;
+            }
+
+        .preview-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .category-header {
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-count {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .no-messages {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .expand-icon {
+            transition: transform 0.2s;
+            font-size: 14px;
+        }
+
+            .expand-icon.open {
+                transform: rotate(180deg);
+            }
+
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffccbc;
+            color: #d84315;
+        }
+
+        .status-archived {
+            background: #bdbdbd;
+            color: #424242;
+        }
+        
+        /* Tab content visibility */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tab styling */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            background: #f5f5f5;
+            color: #666;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: #ebebeb;
+            color: #333;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2c3e50;
+            border: 1px solid #e0e0e0;
+            border-bottom: 2px solid white;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="sidebar-container"></div>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>System Message Manager</h1>
+                    <p class="page-subtitle">Manage personas, perceptions, and technical instructions</p>
+                </div>
+
+                <div id="message" class="message-message"></div>
+
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('persona', event)">
+                        <span class="badge badge-persona">PERSONA</span> Main Character
+                    </div>
+                    <div class="tab" onclick="switchTab('perception', event)">
+                        <span class="badge badge-perception">PERCEPTION</span> Perceptions
+                    </div>
+                    <div class="tab" onclick="switchTab('technical', event)">
+                        <span class="badge badge-technical">TECHNICAL</span> Technical
+                    </div>
+                    <div class="tab" onclick="switchTab('preview', event)">
+                        <i class="fas fa-eye"></i> Preview
+                    </div>
+                </div>
+
+                <div id="persona-tab" class="tab-content active">
+                    <div class="section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2>Persona Messages</h2>
+                            <button onclick="showCreateModal('Persona')">+ Create New Persona</button>
+                        </div>
+                        <div id="persona-list" class="loading">Loading...</div>
+                    </div>
+                </div>
+
+                <div id="perception-tab" class="tab-content">
+                    <div class="section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2>Perception Messages</h2>
+                            <button onclick="showCreateModal('Perception')">+ Create New Perception</button>
+                        </div>
+                        <div id="perception-list" class="loading">Loading...</div>
+                    </div>
+                </div>
+
+                <div id="technical-tab" class="tab-content">
+                    <div class="section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2>Technical Messages</h2>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="initializeDefaults()" style="background: #28a745;">
+                                    <i class="fas fa-magic"></i> Initialize Defaults
+                                </button>
+                                <button onclick="showCreateModal('Technical')">+ Create New Technical</button>
+                            </div>
+                        </div>
+                        <div id="technical-list" class="loading">Loading...</div>
+                    </div>
+                </div>
+
+                <div id="preview-tab" class="tab-content">
+                    <div class="section">
+                        <h2>Persona Preview</h2>
+                        <p style="color: #888; margin-bottom: 20px;">This shows the active persona and its attached context files (excluding technical messages and perceptions). Token count is approximate.</p>
+                        <button onclick="loadPreview()"><i class="fas fa-microscope"></i> Generate Preview</button>
+                        <div id="preview-content"></div>
+                    </div>
+                </div>
+
+                <!-- Edit/Create Modal -->
+                <div id="editModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modalTitle">Edit System Message</h3>
+                            <button class="modal-close" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="editId">
+                            <input type="hidden" id="editType">
+
+                            <div class="form-group">
+                                <label for="editName">Name *</label>
+                                <input type="text" id="editName" placeholder="E.g., Main Assistant Persona" required>
+                                <small>A descriptive name for this system message</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editContent">Content *</label>
+                                <textarea id="editContent" placeholder="Enter the system message content..." required></textarea>
+                                <small>The actual system message text</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editDescription">Description</label>
+                                <input type="text" id="editDescription" placeholder="Optional description">
+                                <small>Brief description of purpose or changes</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editTags">Tags (comma-separated)</label>
+                                <input type="text" id="editTags" placeholder="e.g., assistant, helpful, professional">
+                                <small>Tags for organization and search</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editNotes">Notes</label>
+                                <textarea id="editNotes" style="min-height: 80px;" placeholder="Optional notes or reminders"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="editIsActive">
+                                    Set as Active
+                                </label>
+                                <small>Only one message of each type should be active at a time</small>
+                            </div>
+
+                            <div class="form-group" id="userProfileGroup" style="display: none;">
+                                <label>
+                                    <input type="checkbox" id="editIsUserProfile">
+                                    Use as User Profile
+                                </label>
+                                <small>The Name field will be used as the user name in conversations</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="secondary" onclick="closeModal()">Cancel</button>
+                            <button class="success" onclick="saveMessage()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/sidebar-loader.js"></script>
+    <script type="module" src="systemmessages-modular.js"></script>
+</body>
+</html>
