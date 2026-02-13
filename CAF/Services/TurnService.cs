@@ -53,7 +53,6 @@ public class TurnService(GeneralDbContext context) : ITurnService
         dbTurn.Input = turn.Input;
         dbTurn.Response = turn.Response;
         dbTurn.StrippedTurn = turn.StrippedTurn;
-        dbTurn.JsonInput = state.GeminiRequest?.ToJson() ?? state.ClaudeRequest?.ToJson();
         dbTurn.Accepted = accepted;
 
         // Mark all context data as used by setting UsedLastOnTurnId
